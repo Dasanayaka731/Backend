@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Loges" ALTER COLUMN "date" SET DATA TYPE TEXT;

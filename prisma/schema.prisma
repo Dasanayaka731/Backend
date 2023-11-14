@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Clients {
+  clientID   Int        @id @default(autoincrement())
+  clientName String     @unique
+  district   String
+  province   String
+  Projects   Projects[]
+}
+
+model Projects {
+  projectID    Int            @id @default(autoincrement())
+  projectName  String         @unique
+  maxBudget    Float
+  minBudget    Float
+  client       Clients        @relation(fields: [clientID], references: [clientID])
+  clientID     Int
+  Transactions Transactions[]
+}
+
+model CostTypes {
+  costID       Int            @id @default(autoincrement())
+  costType     String         @unique
+  Transactions Transactions[]
+}
+
+model Officers {
+  officerID        Int                @id @default(autoincrement())
+  officerName      String             @unique
+  HeadTransactions HeadTransactions[]
+}
+
+model HeadTransactions {
+  headID       Int            @id @default(autoincrement())
+  createdAt    String
+  totalCost    Float
+  date         String
+  officer      Officers       @relation(fields: [officerID], references: [officerID])
+  officerID    Int
+  refferenceNo String
+  transactions Transactions[]
+}
+
+model Transactions {
+  transactionID      Int              @id @default(autoincrement())
+  amount             Float
+  createdAt          String
+  project            Projects         @relation(fields: [projectID], references: [projectID])
+  projectID          Int
+  costType           CostTypes        @relation(fields: [costTypesID], references: [costID])
+  costTypesID        Int
+  receipts           Receipts[]
+  headID             HeadTransactions @relation(fields: [headTransactionsID], references: [headID])
+  updatedAt          String
+  user               String
+  headTransactionsID Int
+}
+
+model Receipts {
+  receiptID     Int          @id @default(autoincrement())
+  transaction   Transactions @relation(fields: [transactionID], references: [transactionID], onDelete: Cascade) // Define the relationship to Transactions
+  receiptName   String
+  createdAt     String
+  transactionID Int
+}
+
+model Users {
+  userID    Int    @id @default(autoincrement())
+  username  String @unique
+  password  String
+  role      String
+  status    String
+  createdAt String
+  updatedAt String
+}
+
+model Loges {
+  logID       Int    @id @default(autoincrement())
+  user        String
+  action      String
+  date        String
+  referenceID Int
+}
